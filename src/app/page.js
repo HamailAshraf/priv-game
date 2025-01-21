@@ -1,5 +1,6 @@
 'use client'
 import Block from "./components/Block";
+import Rules from "./components/Rules";
 import { useState } from "react";
 
 export default function Home() {
@@ -9,6 +10,7 @@ export default function Home() {
   const [flag, setFlag] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [highlightedColor, setHighlightedColor] = useState(null);
+  const [showRules, setShowRules] = useState(true);
 
   const handleBlockClick = (color) => {
     setSelectedColors((prev) => [...prev, color]);
@@ -46,8 +48,13 @@ export default function Home() {
     setGameOver(true);
   };
 
+  const handleShowRules = () => {
+    setShowRules(false);
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
+      {showRules && <Rules onClick={() => handleShowRules()}/>}
       <div>
         <button onClick={handleStartGame} disabled={flag}>
           Start Game
