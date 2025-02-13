@@ -1,7 +1,7 @@
 'use client'
 import Block from "./components/Block";
 import Rules from "./components/Rules";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'white', 'teal', 'brown'];
@@ -11,6 +11,28 @@ export default function Home() {
   const [gameOver, setGameOver] = useState(false);
   const [highlightedColor, setHighlightedColor] = useState(null);
   const [showRules, setShowRules] = useState(true);
+  const [delayMs, setDelayMs] = useState(500);
+
+  function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  const flashRequiredColors = async () => {
+    for (const element of requiredColors) {
+      console.log(element);
+      setHighlightedColor(element);
+      await delay(delayMs);
+      setHighlightedColor(element);
+      await delay(50);
+    }
+
+    setDelayMs(delayMs - 50);
+    setHighlightedColor(null);
+  }
+
+  useEffect(() => {
+    flashRequiredColors();
+  }, [requiredColors]);
 
   const handleBlockClick = (color) => {
     setSelectedColors((prev) => [...prev, color]);
@@ -34,11 +56,6 @@ export default function Home() {
   const addColor = () => {
     const newColor = colors[Math.floor(Math.random() * colors.length)];
     setRequiredColors((prev) => [...prev, newColor]);
-    setHighlightedColor(newColor);
-
-    setTimeout(() => {
-      setHighlightedColor(null);
-    }, 1000);
 
     setSelectedColors([]);
   };
@@ -57,11 +74,13 @@ export default function Home() {
       {showRules && <Rules onClick={() => handleShowRules()}/>}
       <div>
         <button onClick={handleStartGame} disabled={flag}>
-          Start Game
+          {flag === false
+            ? "Start Game"
+            : "Game in progress"}
         </button>
       </div>
       {gameOver && <h3>Game Over! Try Again.</h3>}
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "20px", width: "60%" }}>
+      <div className="grid grid-cols-3 gap-2 justify-center items-center w-fit">
         {colors.map((color, index) => (
           <Block
             key={index}
